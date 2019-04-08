@@ -2,6 +2,7 @@
 
 
 import asyncio
+import inspect
 
 import aiohttp
 
@@ -20,6 +21,9 @@ class AuthenticationFailure(XoWSError):
 
 class NotEnabledError(XoWSError):
     "You may need to enable NetworkServices Websocket."
+
+class HTTPNotEnabledError(XoWSError):
+    "You may have connected to an HTTPS-only endpoint over HTTP"
 
 class InvalidRequest(XoWSError):
     "The request was invalid or unsupported."
@@ -114,6 +118,8 @@ class XoWSClient:
             await self._session.close()
 
         if error:
+            if error.code == 401 and self._url.startswith('ws:'):
+                raise HTTPNotEnabledError(HTTPNotEnabledError.__doc__, error.code)
             if error.code == 403:
                 raise AuthenticationFailure(AuthenticationFailure.__doc__, error.code)
             if error.code == 502:
@@ -218,7 +224,9 @@ class XoWSClient:
             params = data['params']
             id_ = params.pop('Id')
             handler = self._feedback_handlers[id_]
-            handler(params, id_)
+            ret = handler(params, id_)
+            if inspect.isawaitable(ret):
+                asyncio.create_task(ret)
 
     async def _read_loop(self):
         while True:
