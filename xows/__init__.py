@@ -25,6 +25,9 @@ class NotEnabledError(XoWSError):
 class HTTPNotEnabledError(XoWSError):
     "You may have connected to an HTTPS-only endpoint over HTTP"
 
+class RateLimitError(XoWSError):
+    "You have exceeded the codec connection rate limit."
+
 class InvalidRequest(XoWSError):
     "The request was invalid or unsupported."
 
@@ -124,6 +127,8 @@ class XoWSClient:
                 raise AuthenticationFailure(AuthenticationFailure.__doc__, error.code)
             if error.code == 502:
                 raise ConnectionError("Proxy error. Most likely cause for these is codec reboot.")
+            if error.code == 503:
+                raise RateLimitError(RateLimitError.__doc__, error.code)
             raise NotEnabledError(NotEnabledError.__doc__, error.code)
         asyncio.create_task(self._read_loop())
 
@@ -213,10 +218,12 @@ class XoWSClient:
     async def _process(self, data):
         exception = self._make_exception(data)
         if 'id' in data:
+            future = self._pending[data['id']]
             if exception:
-                self._pending[data['id']].set_exception(exception)
+                future.set_exception(exception)
             else:
-                self._pending[data['id']].set_result(data['result'])
+                future.set_result(data['result'])
+            await asyncio.wait([future])
         elif exception:
             raise exception
         else:
