@@ -20,6 +20,7 @@ Websockets should be set to `FollowHTTPService` and HTTP Mode should be set to e
 
 ## Usage example
 
+```py
 import xows
 import asyncio
 
@@ -46,7 +47,7 @@ async def start():
         await client.wait_until_closed()
 
 asyncio.run(start())
-
+```
 
 For more usage examples, check out the clixows script. It's source is found
 under `xows/__main__.py` and it can be invoked using `python3 -m xows`, or,
