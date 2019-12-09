@@ -116,20 +116,22 @@ class XoWSClient:
             self._client = await self._session.ws_connect(self._url,
                                                           auth=self._auth,
                                                           ssl=False)
-        except aiohttp.client_exceptions.WSServerHandshakeError as err:
+        except aiohttp.client_exceptions.ClientError as err:
             error = err
             await self._session.close()
 
         if error:
-            if error.code == 401 and self._url.startswith('ws:'):
-                raise HTTPNotEnabledError(HTTPNotEnabledError.__doc__, error.code)
-            if error.code == 403:
-                raise AuthenticationFailure(AuthenticationFailure.__doc__, error.code)
-            if error.code == 502:
+            if not hasattr(error, 'status'):
+                raise ConnectionError(error)
+            if error.status == 401 and self._url.startswith('ws:'):
+                raise HTTPNotEnabledError(HTTPNotEnabledError.__doc__, error.status)
+            if error.status == 403:
+                raise AuthenticationFailure(AuthenticationFailure.__doc__, error.status)
+            if error.status == 502:
                 raise ConnectionError("Proxy error. Most likely cause for these is codec reboot.")
-            if error.code == 503:
-                raise RateLimitError(RateLimitError.__doc__, error.code)
-            raise NotEnabledError(NotEnabledError.__doc__, error.code)
+            if error.status == 503:
+                raise RateLimitError(RateLimitError.__doc__, error.status)
+            raise NotEnabledError(NotEnabledError.__doc__, error.status)
         asyncio.create_task(self._read_loop())
 
     async def send(self, message):

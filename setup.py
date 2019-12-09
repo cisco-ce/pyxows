@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/cisco-ce/pyxows",
     python_requires='>=3.7',
     install_requires=[
-        "aiohttp >= 3.0",
+        "aiohttp >= 3.1",
         "click >= 6.0",
     ],
     packages=['xows'],
