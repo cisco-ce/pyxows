@@ -36,7 +36,7 @@ async def start():
             await client.xGet(['Status', 'Audio', 'Volume']))
             
         print('Get configuration:',
-            await client.xGet(['Configuration', 'SIP', 'Proxy[1]', 'Address']))
+            await client.xGet(['Configuration', 'SIP', 'Proxy', 1, 'Address']))
 
         print('Command:',
               await client.xCommand(['Audio', 'Volume', 'Set'], Level=60))
