@@ -9,6 +9,8 @@ This library allows you to connect to a Cisco Telepresence endpoint running CE
 software version 9.7 or later using jsonrpc over websocket. There is also a
 command-line utility built on top of the library.
 
+The API itself is documented at https://www.cisco.com/c/dam/en/us/td/docs/telepresence/endpoint/api/collaboration-endpoint-software-api-transport.pdf
+
 
 ## Installing
 
