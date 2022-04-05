@@ -242,16 +242,21 @@ class XoWSClient:
             msg = await self._client.receive()
             if msg.type == aiohttp.WSMsgType.TEXT:
                 await self._process(msg.json())
+            elif msg.type == aiohttp.WSMsgType.CLOSE:
+                await self.disconnect()
+                self._closed.set_result(None)
+                return
             elif msg.type == aiohttp.WSMsgType.CLOSED:
                 self._closed.set_result(None)
-                break
+                return
             elif msg.type == aiohttp.WSMsgType.ERROR:
                 self._closed.set_exception(ConnectionClosed(ConnectionClosed.__doc__))
-                break
+                return
             elif msg.type in (aiohttp.WSMsgType.CLOSING,):
                 pass
             else:
-                raise RuntimeError(f'Unhandled msg type {msg.type}')
+                self._closed.set_exception(RuntimeError(f'Unhandled msg type {msg.type}'))
+                return
 
     async def wait_until_closed(self):
         '''Waits until the server closes the connection.
