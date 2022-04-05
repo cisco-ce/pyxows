@@ -14,6 +14,12 @@ The API itself is documented at https://www.cisco.com/c/dam/en/us/td/docs/telepr
 
 ## Installing
 
+From PyPi
+
+    pip install [--user] xows
+
+From a checkout of the git repo
+
     python setup.py install [--user]
 
 ## Requirements
