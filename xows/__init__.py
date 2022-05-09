@@ -206,9 +206,11 @@ class XoWSClient:
         future = await self._api_call('xFeedback/Subscribe',
                                       Query=query,
                                       NotifyCurrentValue=notify_current_value)
+
         def register_handler(fut):
             response = fut.result()
             self._feedback_handlers[response['Id']] = handler
+
         future.add_done_callback(register_handler)
         data = await future
         return data['Id']

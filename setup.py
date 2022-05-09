@@ -26,6 +26,6 @@ setuptools.setup(
         "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 3",
         "Topic :: Utilities",
-        "Framework :: asyncio",
+        "Framework :: AsyncIO",
     ],
 )

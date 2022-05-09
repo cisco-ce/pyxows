@@ -18,6 +18,7 @@ def wrap_cli(fun):
     async def wrapper(obj, *args, **kwargs):
         async with obj as client:
             await fun(client, *args, **kwargs)
+
     def run_wrapper(*args, **kwargs):
         asyncio.run(wrapper(*args, **kwargs))
 
@@ -107,6 +108,7 @@ async def demo(client):
         except xows.CommandError as err:
             print(err)
 
+
 @cli.command()
 @click.argument('path', nargs=-1)
 @coerce_list('path')
@@ -116,6 +118,7 @@ async def get(client, path):
     "Get data from a config/status path."
 
     pprint.pprint(await client.xGet(path))
+
 
 @cli.command()
 @click.argument('query', nargs=-1)
@@ -127,6 +130,7 @@ async def query(client, query):
 
     pprint.pprint(await client.xQuery(query))
 
+
 @cli.command()
 @click.argument('path', nargs=-1)
 @coerce_list('path')
@@ -137,6 +141,7 @@ async def set(client, path, value):
     "Set a single configuration."
 
     pprint.pprint(await client.xSet(path, value))
+
 
 @cli.command()
 @click.argument('params', nargs=-1)
@@ -168,6 +173,7 @@ async def command(client, params):
     else:
         pprint.pprint(await client.xCommand(command, **params))
 
+
 @cli.command()
 @click.argument('query', nargs=-1)
 @coerce_list('query')
@@ -183,6 +189,7 @@ async def feedback(client, query, current_value):
     print('Subscription Id:', await client.subscribe(query, handler, current_value))
 
     await client.wait_until_closed()
+
 
 if __name__ == '__main__':
     cli()
