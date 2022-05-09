@@ -151,9 +151,18 @@ async def command(client, params):
             break
         command.append(param)
     command = _coerce_list(command)
-    params = params[len(command):]
+    param_list = params[len(command):]
+    params = dict()
     try:
-        params = dict(param.split('=', 1) for param in params)
+        for param in param_list:
+            key, value = param.split('=', 1)
+            if key in params:
+                if isinstance(params[key], list):
+                    params[key].append(value)
+                else:
+                    params[key] = [params[key], value]
+            else:
+                params[key] = value
     except ValueError:
         print('Command arguments must contain "="')
     else:
